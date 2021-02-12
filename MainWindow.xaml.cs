@@ -19,8 +19,8 @@ namespace BiesseEditor
     {
         IntPtr hWnd = IntPtr.Zero;
         IntPtr editHwnd = IntPtr.Zero;
-        string prgName = "Блокнот"; //"BiesseWorks"
-        string winName = "Edit";    //"RichEdit20W"
+        string prgName = "BiesseWorks";
+        string winName = "RichEdit20W";
         protected IRichEditOle IRichEditOleValue = null;
         protected IntPtr IRichEditOlePtr = IntPtr.Zero;
         protected ITextDocument ITextDocumentValue = null;
