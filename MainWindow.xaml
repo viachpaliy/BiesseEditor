@@ -26,7 +26,7 @@
               BorderBrush="Black"
               BorderThickness="1">
 
-            <MenuItem Header="File"
+            <MenuItem Header="Script"
                       Margin="5 0 5 0"
                       FontWeight="DemiBold"
                       FontSize="14">
@@ -35,7 +35,13 @@
                           Click="MenuItem_GetCode" />
                 <MenuItem Header="Send Code"
                           FontWeight="Regular"
-                          Click="MenuItem_SendCode" />
+                          Click="MenuItem_SendCode"/>
+                <MenuItem Header="Send Code by Clipboard"
+                          FontWeight="Regular"
+                          Click="MenuItem_SendCodeCtrlV"/>
+                <MenuItem Header="Send Code by Keys"
+                          FontWeight="Regular"
+                          Click="MenuItem_SendCodeByKeys"/>
                 <MenuItem Header="Open file"
                           FontWeight="Regular"
                           Click="MenuItem_OpenFile" />
@@ -59,7 +65,27 @@
                 <MenuItem Header="Paste"
                           FontWeight="Regular"
                           Click="MenuItem_Paste" />
-                
+                <MenuItem Header="Add Script"
+                          FontWeight="Regular"
+                          Click="MenuItem_AddScript" />
+              
+            </MenuItem>
+            <MenuItem Header="BiesseWorks"
+                      FontWeight="DemiBold"
+                      Margin="5 0 5 0"
+                      FontSize="14">
+                <MenuItem Header="Get Code"
+                          FontWeight="Regular"
+                          Click="MenuItem_GetDocCode" />
+                <MenuItem Header="Edit Panel"
+                          FontWeight="Regular"
+                          Click="MenuItem_EditPanel" />
+                <MenuItem Header="Save Biesse Doc"
+                          FontWeight="Regular"
+                          Click="MenuItem_SaveBiesseDoc" />
+                <MenuItem Header="Save Biesse Doc as..."
+                          FontWeight="Regular"
+                          Click="MenuItem_SaveBiesseDocAs" />
             </MenuItem>
         </Menu>
         <avalonEdit:TextEditor  

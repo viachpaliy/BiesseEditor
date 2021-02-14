@@ -10,6 +10,9 @@ namespace BiesseEditor
     public class API
     {
         [DllImport("User32.dll")]
+        public static extern Int32 SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("User32.dll")]
         public static extern Int32 SendMessage(
           IntPtr hWnd,
           int Msg,

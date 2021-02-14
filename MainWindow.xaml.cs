@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 using Microsoft.Win32;
 using System.IO;
+using System.Windows.Forms;
 
 namespace BiesseEditor
 {
@@ -21,6 +22,9 @@ namespace BiesseEditor
         IntPtr editHwnd = IntPtr.Zero;
         string prgName = "BiesseWorks";
         string winName = "RichEdit20W";
+        Editor.EditorAssistito biesse;
+        Editor.EditorAssDoc biesseDoc;
+
         protected IRichEditOle IRichEditOleValue = null;
         protected IntPtr IRichEditOlePtr = IntPtr.Zero;
         protected ITextDocument ITextDocumentValue = null;
@@ -31,6 +35,8 @@ namespace BiesseEditor
         public MainWindow()
         {
             InitializeComponent();
+            biesse = new Editor.EditorAssistito();
+            GetRichEditOleInterface();
             SetPrgHWND();
             SetEditHWND();
             bppCode.Text = GetText();
@@ -44,17 +50,30 @@ namespace BiesseEditor
 
         private void MenuItem_GetCode(object sender, RoutedEventArgs e)
         {
+            SetEditHWND();
             bppCode.Text = GetText();
         }
 
         private void MenuItem_SendCode(object sender, RoutedEventArgs e)
         {
+            SetEditHWND();
             SendText(bppCode.Text);
         }
 
+        private void MenuItem_SendCodeCtrlV(object sender, RoutedEventArgs e)
+        {
+            SetEditHWND();
+            SendTextByCtrlV(bppCode.Text);
+        }
+
+        private void MenuItem_SendCodeByKeys(object sender, RoutedEventArgs e)
+        {
+            SetEditHWND();
+            SendTextByKeys(bppCode.Text);
+        }
         private void MenuItem_OpenFile(object sender, RoutedEventArgs e)
         {
-            var openFileDialog = new OpenFileDialog();
+            var openFileDialog = new Microsoft.Win32.OpenFileDialog();
             openFileDialog.DefaultExt = "*.*";
             openFileDialog.Multiselect = false;
 
@@ -66,7 +85,7 @@ namespace BiesseEditor
 
         private void MenuItem_Save(object sender, RoutedEventArgs e)
         {
-            var saveFileDialog = new SaveFileDialog();
+            var saveFileDialog = new Microsoft.Win32.SaveFileDialog();
             saveFileDialog.Filter = "VBScript Files (*.vbs)|*.vbs";
 
             if (saveFileDialog.ShowDialog() == true)
@@ -77,9 +96,22 @@ namespace BiesseEditor
 
         private void MenuItem_Exit(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            System.Windows.Application.Current.Shutdown();
         }
 
+        private void MenuItem_AddScript(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new Microsoft.Win32.OpenFileDialog();
+            openFileDialog.DefaultExt = "*.*";
+            openFileDialog.Multiselect = false;
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                StringBuilder text = new StringBuilder(bppCode.Text);
+                text.Append(File.ReadAllText(openFileDialog.FileName));
+                bppCode.Text = text.ToString();
+            }
+        }
         private void MenuItem_Cut(object sender, RoutedEventArgs e)
         {
             bppCode.Cut();
@@ -95,6 +127,35 @@ namespace BiesseEditor
             bppCode.Paste();
         }
 
+        private void MenuItem_GetDocCode(object sender, RoutedEventArgs e)
+        {
+            biesseDoc = biesse.GetActiveDocument();
+            bppCode.Text = biesseDoc.GetEditorText();
+        }
+
+        private void MenuItem_EditPanel(object sender, RoutedEventArgs e)
+        {
+            biesseDoc = biesse.GetActiveDocument();
+            biesseDoc.EditPanel(1);
+        }
+
+        private void MenuItem_SaveBiesseDoc(object sender, RoutedEventArgs e)
+        {
+            biesseDoc = biesse.GetActiveDocument();
+            biesseDoc.SaveFile();
+        }
+
+        private void MenuItem_SaveBiesseDocAs(object sender, RoutedEventArgs e)
+        {
+            biesseDoc = biesse.GetActiveDocument();
+            var saveFileDialog = new Microsoft.Win32.SaveFileDialog();
+            saveFileDialog.Filter = "BPP Files (*.bpp)|*.bpp";
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                biesseDoc.SaveAsFile(saveFileDialog.FileName);
+            }
+        }
         private static bool EnumWindow(IntPtr hWnd, IntPtr lParam)
         {
             GCHandle gcChildhandlesList = GCHandle.FromIntPtr(lParam);
@@ -157,6 +218,34 @@ namespace BiesseEditor
             }
 
         }
+
+        public void SendTextByCtrlV(string text)
+        {
+                System.Windows.Clipboard.SetData(System.Windows.DataFormats.Text, (Object)text);
+                API.SetForegroundWindow(editHwnd);
+                SendKeys.SendWait("^V");
+            
+        }
+
+        public void SendTextByKeysA(string text)
+        {
+            API.SetForegroundWindow(editHwnd);
+            char[] chars = text.ToCharArray();
+            foreach (char ch in chars)
+            {
+                SendKeys.SendWait(ch.ToString());
+            }
+        }
+        public void SendTextByKeys(string text)
+        {
+            API.SetForegroundWindow(editHwnd);
+            string[] lines = text.Split('\n');
+            foreach (string line in lines)
+            {
+                SendKeys.SendWait(line);
+            }
+        }
+
         public void SendText(string text)
         {
             IntPtr textPtr = Marshal.StringToHGlobalAnsi(text);
@@ -188,6 +277,7 @@ namespace BiesseEditor
                 Marshal.WriteIntPtr(ptr, IntPtr.Zero);                                    // Clear it.
                 try
                 {
+                    SetEditHWND();
                     if (0 != API.SendMessage(editHwnd, Messages.EM_GETOLEINTERFACE, IntPtr.Zero, ptr))
                     {
                         // Read the returned pointer
