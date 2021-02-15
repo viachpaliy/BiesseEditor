@@ -61,13 +61,21 @@
     </ApplicationDefinition>
     <Compile Include="API.cs" />
     <Compile Include="CLSID.cs" />
+    <Compile Include="CsScriptEditor.xaml.cs">
+      <DependentUpon>CsScriptEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GetObjectOptions.cs" />
     <Compile Include="ITextDocument.cs" />
     <Compile Include="Messages.cs" />
+    <Compile Include="ScriptingHost.cs" />
     <Compile Include="SendMessageTimeoutFlags.cs" />
     <Compile Include="SIZEL.cs" />
     <Compile Include="REOBJECT.cs" />
     <Compile Include="TomConstants.cs" />
+    <Page Include="CsScriptEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
